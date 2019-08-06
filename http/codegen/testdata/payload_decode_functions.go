@@ -587,6 +587,58 @@ func DecodeMethodQueryStringValidateRequest(mux goahttp.Muxer, decoder func(*htt
 	}
 }
 `
+// TODO this just has what the generators currently produce, we need to massage this into what we think we want it to look like then modify the generators to produce it
+var PayloadQueryStringValidateSecureDecodeCode = `// DecodeMethodQueryStringValidateSecureRequest returns a decoder for requests
+// sent to the ServiceQueryStringValidateSecure MethodQueryStringValidateSecure
+// endpoint.
+func DecodeMethodQueryStringValidateSecureRequest(mux goahttp.Muxer, decoder func(*http.Request) goahttp.Decoder) func(*http.Request) (interface{}, error) {
+	return func(r *http.Request) (interface{}, error) {
+		var (
+			q          string
+			oauthToken string
+			token      string
+			key        string
+			err        error
+		)
+		q = r.URL.Query().Get("q")
+		if q == "" {
+			err = goa.MergeErrors(err, goa.MissingFieldError("q", "query string"))
+		}
+		if !(q == "val") {
+			err = goa.MergeErrors(err, goa.InvalidEnumValueError("q", q, []interface{}{"val"}))
+		}
+		oauthToken = r.Header.Get("Authorization")
+		if oauthToken == "" {
+			err = goa.MergeErrors(err, goa.MissingFieldError("Authorization", "header"))
+		}
+		token = r.Header.Get("Authorization")
+		if token == "" {
+			err = goa.MergeErrors(err, goa.MissingFieldError("Authorization", "header"))
+		}
+		key = r.Header.Get("Authorization")
+		if key == "" {
+			err = goa.MergeErrors(err, goa.MissingFieldError("Authorization", "header"))
+		}
+		if err != nil {
+			return nil, err
+		}
+		payload := NewMethodQueryStringValidateSecurePayload(q, oauthToken, token, key)
+		user, pass, ok := r.BasicAuth()
+		if !ok {
+			return nil, goa.MissingFieldError("Authorization", "header")
+		}
+		payload.Username = user
+		payload.Password = pass
+		if strings.Contains(payload.Token, " ") {
+			// Remove authorization scheme prefix (e.g. "Bearer")
+			cred := strings.SplitN(payload.Token, " ", 2)[1]
+			payload.Token = cred
+		}
+
+		return payload, nil
+	}
+}
+`
 
 var PayloadQueryStringNotRequiredValidateDecodeCode = `// DecodeMethodQueryStringNotRequiredValidateRequest returns a decoder for
 // requests sent to the ServiceQueryStringNotRequiredValidate

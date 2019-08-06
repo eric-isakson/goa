@@ -35,6 +35,8 @@ func TestDecode(t *testing.T) {
 		{"query-float64-validate", testdata.PayloadQueryFloat64ValidateDSL, testdata.PayloadQueryFloat64ValidateDecodeCode},
 		{"query-string", testdata.PayloadQueryStringDSL, testdata.PayloadQueryStringDecodeCode},
 		{"query-string-validate", testdata.PayloadQueryStringValidateDSL, testdata.PayloadQueryStringValidateDecodeCode},
+		{"query-string-validate-secure", testdata.PayloadQueryStringValidateSecureDSL, testdata.PayloadQueryStringValidateSecureDecodeCode},
+		// TODO should we add any other secure tests? stream, multipart? other types?
 		{"query-string-not-required-validate", testdata.PayloadQueryStringNotRequiredValidateDSL, testdata.PayloadQueryStringNotRequiredValidateDecodeCode},
 		{"query-bytes", testdata.PayloadQueryBytesDSL, testdata.PayloadQueryBytesDecodeCode},
 		{"query-bytes-validate", testdata.PayloadQueryBytesValidateDSL, testdata.PayloadQueryBytesValidateDecodeCode},

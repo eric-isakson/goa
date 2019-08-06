@@ -320,6 +320,52 @@ var PayloadQueryStringValidateDSL = func() {
 	})
 }
 
+var PayloadQueryStringValidateSecureDSL = func() {
+	var JWTAuth = JWTSecurity("jwt", func() {
+		Description(`Secures endpoint by requiring a valid JWT token retrieved via the signin endpoint. Supports scopes "api:read" and "api:write".`)
+		Scope("api:read", "Read-only access")
+		Scope("api:write", "Read and write access")
+	})
+
+	var APIKeyAuth = APIKeySecurity("api_key", func() {
+		Description("Secures endpoint by requiring an API key.")
+	})
+
+	var BasicAuth = BasicAuthSecurity("basic", func() {
+		Description("Basic authentication used to authenticate security principal during signin")
+	})
+
+	var OAuth2Auth = OAuth2Security("oauth2", func() {
+		AuthorizationCodeFlow("http://goa.design/authorization", "http://goa.design/token", "http://goa.design/refresh")
+		Description(`Secures endpoint by requiring a valid OAuth2 token retrieved via the signin endpoint. Supports scopes "api:read" and "api:write".`)
+		Scope("api:read", "Read-only access")
+		Scope("api:write", "Read and write access")
+	})
+
+	Service("ServiceQueryStringValidateSecure", func() {
+		Method("MethodQueryStringValidateSecure", func() {
+			Security(BasicAuth, OAuth2Auth, JWTAuth, APIKeyAuth, func() {
+				Scope("api:read")
+			})
+			Payload(func() {
+				Username("username", String)
+				Password("password", String)
+				APIKey("api_key", "key", String)
+				Token("token", String)
+				AccessToken("oauth_token", String)
+				Attribute("q", String, func() {
+					Enum("val")
+				})
+				Required("q", "username", "password", "key", "token", "oauth_token")
+			})
+			HTTP(func() {
+				GET("/")
+				Param("q")
+			})
+		})
+	})
+}
+
 var PayloadQueryStringNotRequiredValidateDSL = func() {
 	Service("ServiceQueryStringNotRequiredValidate", func() {
 		Method("MethodQueryStringNotRequiredValidate", func() {
@@ -2646,3 +2692,19 @@ var WithParamsAndHeadersBlockDSL = func() {
 		})
 	})
 }
+
+var PayloadSecurePathArrayStringValidateDSL = func() {
+	Service("ServicePathArrayStringValidate", func() {
+		Method("MethodPathArrayStringValidate", func() {
+			Payload(func() {
+				Attribute("p", ArrayOf(String), func() {
+					Enum([]string{"val"})
+				})
+			})
+			HTTP(func() {
+				GET("/{p}")
+			})
+		})
+	})
+}
+
